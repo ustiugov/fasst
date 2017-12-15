@@ -5,7 +5,7 @@ LD := ${CXX}
 
 # Flags to enable link-time optimization and GDB
 LTO := -flto
-ENABLE_DGB :=
+ENABLE_DGB := -g
 
 HOTS_HOME := ../..
 MICA_HOME := ../../mica2/src

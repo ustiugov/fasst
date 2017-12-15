@@ -234,7 +234,7 @@ coro_id_t* Rpc::poll_comps()
 	
 	/* Poll for completions */
 	long long poll_recv_cq_start = rpc_get_cycles();
-	int cq_comps = ibv_poll_cq(cb->dgram_recv_cq[0], HRD_RQ_DEPTH, wc);
+	int cq_comps = 4; //ibv_poll_cq(cb->dgram_recv_cq[0], HRD_RQ_DEPTH, wc);
 	tot_cycles_poll_recv_cq += rpc_get_cycles() - poll_recv_cq_start;
 
 	if(cq_comps == 0) {
@@ -297,10 +297,12 @@ coro_id_t* Rpc::poll_comps()
 			rpc_req_batch_t *req_batch = &req_batch_arr[_coro_id];
 			req_batch->num_reqs_done += _num_reqs;
 
-			if(req_batch->num_reqs_done == req_batch->num_reqs) {
+//			if(req_batch->num_reqs_done == req_batch->num_reqs) {
+			if(1) {
 				/* Record completed coroutine */
-				rpc_dprintf("Rpc: Worker %d received all responses "
-					"for coroutine %d\n", info.wrkr_gid, _coro_id);
+				rpc_dprintf("Rpc: Worker %d received all(%d) responses "
+					"for coroutine %d\n", info.wrkr_gid, req_batch->num_reqs,
+                    _coro_id);
 
 				next_coro[cur_comp_coro] = _coro_id;
 				cur_comp_coro = _coro_id;
@@ -360,6 +362,7 @@ coro_id_t* Rpc::poll_comps()
 			/* Record coroutine progress for packet loss detection */
 			ld_num_resps_ever[_coro_id] += _num_reqs;
 		} else {
+            rpc_dassert(false);
 			// Handle a new request
 			rpc_dassert(wc_len > 0);	/* Requests cannot be 0-byte */
 
@@ -415,6 +418,7 @@ coro_id_t* Rpc::poll_comps()
 		}
 	}
 
+#if 0
 	/*
 	 * Post new RECVs. At this point, we do not need the polled buffers
 	 * anymore because (a) the polled requests have been processed by the
@@ -437,6 +441,7 @@ coro_id_t* Rpc::poll_comps()
 	if(resp_batch.num_cresps > 0) {
 		send_resps();
 	}
+#endif //0
 
 	next_coro[cur_comp_coro] = RPC_MASTER_CORO_ID;	/* Create the loop */
 

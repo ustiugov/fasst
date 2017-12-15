@@ -34,7 +34,7 @@ fi
 	#numactl --membind=0 \
         #gdb -args \
         sudo LD_LIBRARY_PATH=/usr/local/lib/ -E numactl --membind=0 \
-        ./main $1 &
+        gdb -args ./main --machine-id $1 #&
 #	--num-threads 1 --num-coro 2 --base-port-index 0 --num-ports 2 --num-qps 1 --machine-id 0 --postlist 16 --numa-node 0 --num-keys-millions 1 --val-size 32 #&
 
 # Debug: run --num-threads 1 --num-coro 2 --base-port-index 0 --num-ports 2 --num-qps 1 --machine-id 0 --postlist 16 --numa-node 0 --num-keys-millions 1 --val-size 32
