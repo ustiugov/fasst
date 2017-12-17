@@ -30,8 +30,9 @@ Rpc::Rpc(struct rpc_args args) : info(args)
 
 	init_non_zero_members();
 	init_coroutine_metadata();
-return;
 
+init_send_wrs();
+return;
 	/* Initialize RECV freelist and constant fields of wr's */
 	init_recv_wrs();
 	init_send_wrs();

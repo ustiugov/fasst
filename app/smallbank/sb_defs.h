@@ -37,6 +37,16 @@
 #define CHECKING_BASE_SHM_KEY 4000
 #define SB_MAX_SHM_KEY 6000
 
+// Debug macros
+#define sb_dprintf(fmt, ...) \
+	do { \
+		if (SB_DEBUG_PRINTF) { \
+            fprintf(stdout, "SB: "); \
+			fprintf(stdout, fmt, __VA_ARGS__); \
+			fflush(stdout); \
+		} \
+	} while (0)
+
 // Smallbank table keys and values
 // All keys have been sized to 8 bytes
 // All values have been sized to the next multiple of 8 bytes
@@ -96,5 +106,25 @@ enum class sb_txn_type_t : int {
 	transact_saving,
 	write_check,
 };
+
+static std::string sb_tx_type_to_string(sb_txn_type_t type)
+{
+    switch(type) {
+        case sb_txn_type_t::amalgamate:
+            return std::string("AMALGAMATE");
+        case sb_txn_type_t::balance:
+            return std::string("BALANCE");
+        case sb_txn_type_t::deposit_checking:
+            return std::string("DEPOSIT_CHECKING");
+        case sb_txn_type_t::send_payment:
+            return std::string("SEND_PAYMENT");
+        case sb_txn_type_t::transact_saving:
+            return std::string("TRANSACT_SAVING");
+        case sb_txn_type_t::write_check:
+            return std::string("WRITE_CHECK");
+        default:
+            return std::string("SB TX, watdat?");
+    }
+}
 
 #endif /* SB_DEFS */

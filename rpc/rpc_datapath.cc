@@ -21,7 +21,7 @@ int Rpc::send_reqs(int coro_id)
 
 	/* Bookkeeping */
 	int wr_i = 0;
-	struct ibv_send_wr *bad_wr;
+//	struct ibv_send_wr *bad_wr;
 
 	for(int msg_i = 0; msg_i < num_uniq_mn; msg_i++) {
 		rpc_cmsg_t *cmsg = &req_batch->cmsg_arr[msg_i];
@@ -69,9 +69,9 @@ int Rpc::send_reqs(int coro_id)
 			rpc_dassert(wr_i > 0 && wr_i <= RPC_MAX_POSTLIST); /* Need > 0 */
 			send_wr[wr_i - 1].next = NULL;	/* Breaker of chains */
 
-			int ret = ibv_post_send(cb->dgram_qp[active_qp],
-				&send_wr[0], &bad_wr);
-			rpc_dassert_msg(ret == 0, "Rpc: ibv_post_send error\n");
+//			int ret = ibv_post_send(cb->dgram_qp[active_qp],
+//				&send_wr[0], &bad_wr);
+//			rpc_dassert_msg(ret == 0, "Rpc: ibv_post_send error\n");
 			rpc_stat_inc(stat_resp_post_send_calls, 1);
 
 			/* Reset */
@@ -246,7 +246,7 @@ coro_id_t* Rpc::poll_comps()
 	}
 
 	/* Reset the response batch if there are completions */
-	int cur_comp_coro = RPC_MASTER_CORO_ID;	/* For completed coroutines */
+//	int cur_comp_coro = RPC_MASTER_CORO_ID;	/* For completed coroutines */
 	resp_batch.clear();
 
 #if RPC_ENABLE_MICA_PREFETCH == 1
@@ -263,11 +263,12 @@ coro_id_t* Rpc::poll_comps()
 	}
 #endif
 
+#if 0
 	for(int comp_i = 0; comp_i < cq_comps; comp_i++) {
 		/* Unmarshal the completion's immediate */
 		union rpc_imm wc_imm;
 		wc_imm.int_rep = wc[comp_i].imm_data;
-		check_imm(wc_imm);;
+//		check_imm(wc_imm);;
 
 		uint32_t _is_req = wc_imm.is_req;
 		uint32_t _num_reqs = wc_imm.num_reqs;	/* or number of resps */
@@ -362,7 +363,6 @@ coro_id_t* Rpc::poll_comps()
 			/* Record coroutine progress for packet loss detection */
 			ld_num_resps_ever[_coro_id] += _num_reqs;
 		} else {
-            rpc_dassert(false);
 			// Handle a new request
 			rpc_dassert(wc_len > 0);	/* Requests cannot be 0-byte */
 
@@ -418,7 +418,6 @@ coro_id_t* Rpc::poll_comps()
 		}
 	}
 
-#if 0
 	/*
 	 * Post new RECVs. At this point, we do not need the polled buffers
 	 * anymore because (a) the polled requests have been processed by the
@@ -441,7 +440,6 @@ coro_id_t* Rpc::poll_comps()
 	if(resp_batch.num_cresps > 0) {
 		send_resps();
 	}
-#endif //0
 
 	next_coro[cur_comp_coro] = RPC_MASTER_CORO_ID;	/* Create the loop */
 
@@ -464,6 +462,8 @@ coro_id_t* Rpc::poll_comps()
 		_c = next_coro[_c];
 	}
 #endif
+
+#endif //0
 
 	return next_coro;
 }
