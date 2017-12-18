@@ -162,6 +162,9 @@ public:
 				mappings->get_backup_mn_from_primary(item.primary_mn, i);
 		}
 
+        tx_dprintf("Tx: Added item of type={%s} to read set with primary "
+                "%d\n", rpc_type_to_string(rpc_reqtype).c_str(), item.primary_mn);
+
 		read_set.push_back(item);
 		return item.primary_mn;
 	}

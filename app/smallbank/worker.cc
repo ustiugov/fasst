@@ -129,9 +129,9 @@ void txn_amalgamate(coro_yield_t &yield, int coro_id, Tx *tx)
 	sb_sav_val_t *sav_val_0 = (sb_sav_val_t *) sav_obj_0.val;
 	sb_chk_val_t *chk_val_0 = (sb_chk_val_t *) chk_obj_0.val;
 	sb_chk_val_t *chk_val_1 = (sb_chk_val_t *) chk_obj_1.val;
-	sb_dassert(sav_val_0->magic == sb_sav_magic);
-	sb_dassert(chk_val_0->magic == sb_chk_magic);
-	sb_dassert(chk_val_1->magic == sb_chk_magic);
+//	sb_dassert(sav_val_0->magic == sb_sav_magic);
+//	sb_dassert(chk_val_0->magic == sb_chk_magic);
+//	sb_dassert(chk_val_1->magic == sb_chk_magic);
 
 	/* Increase acct_id_1's balance and set acct_id_0's balances to 0 */
 	chk_val_1->bal += (sav_val_0->bal + chk_val_0->bal);
@@ -180,8 +180,8 @@ void txn_balance(coro_yield_t &yield, int coro_id, Tx *tx)
 
 	sb_sav_val_t *sav_val = (sb_sav_val_t *) sav_obj.val; _unused(sav_val);
 	sb_chk_val_t *chk_val = (sb_chk_val_t *) chk_obj.val; _unused(chk_val);
-	sb_dassert(sav_val->magic == sb_sav_magic);
-	sb_dassert(chk_val->magic == sb_chk_magic);
+//	sb_dassert(sav_val->magic == sb_sav_magic);
+//	sb_dassert(chk_val->magic == sb_chk_magic);
 
 	tx_status_t commit_result = tx->commit(yield);
 	if(commit_result == tx_status_t::committed) {
@@ -223,7 +223,7 @@ void txn_deposit_checking(coro_yield_t &yield, int coro_id, Tx *tx)
 
 	/* If we are here, execution succeeded and we have a lock*/
 	sb_chk_val_t *chk_val = (sb_chk_val_t *) chk_obj.val;
-	sb_dassert(chk_val->magic == sb_chk_magic);
+//	sb_dassert(chk_val->magic == sb_chk_magic);
 
 	chk_val->bal += amount;	/* Update checking balance */
 
@@ -273,13 +273,13 @@ void txn_send_payment(coro_yield_t &yield, int coro_id, Tx *tx)
 	/* if we are here, execution succeeded and we have locks */
 	sb_chk_val_t *chk_val_0 = (sb_chk_val_t *) chk_obj_0.val;
 	sb_chk_val_t *chk_val_1 = (sb_chk_val_t *) chk_obj_1.val;
-	sb_dassert(chk_val_0->magic == sb_chk_magic);
-	sb_dassert(chk_val_1->magic == sb_chk_magic);
+//	sb_dassert(chk_val_0->magic == sb_chk_magic);
+//	sb_dassert(chk_val_1->magic == sb_chk_magic);
 
-	if(chk_val_0->bal < amount) {
-		tx->abort(yield);
-		return;
-	}
+//	if(chk_val_0->bal < amount) {
+//		tx->abort(yield);
+//		return;
+//	}
 
 	chk_val_0->bal -= amount;	/* Debit */
 	chk_val_1->bal += amount;	/* Credit */
@@ -324,7 +324,7 @@ void txn_transact_saving(coro_yield_t &yield, int coro_id, Tx *tx)
 
 	/* If we are here, execution succeeded and we have a lock */
 	sb_sav_val_t *sav_val = (sb_sav_val_t *) sav_obj.val;
-	sb_dassert(sav_val->magic == sb_sav_magic);
+//	sb_dassert(sav_val->magic == sb_sav_magic);
 
 	sav_val->bal += amount;	/* Update saving balance */
 
@@ -373,8 +373,8 @@ void txn_write_check(coro_yield_t &yield, int coro_id, Tx *tx)
 
 	sb_sav_val_t *sav_val = (sb_sav_val_t *) sav_obj.val;
 	sb_chk_val_t *chk_val = (sb_chk_val_t *) chk_obj.val;
-	sb_dassert(sav_val->magic == sb_sav_magic);
-	sb_dassert(chk_val->magic == sb_chk_magic);
+//	sb_dassert(sav_val->magic == sb_sav_magic);
+//	sb_dassert(chk_val->magic == sb_chk_magic);
 
 	if(sav_val->bal + chk_val->bal < amount) {
 		chk_val->bal -= (amount + 1);
@@ -412,6 +412,11 @@ void slave_func(coro_yield_t &yield, int coro_id)
 #endif
 		
 		sb_txn_type_t txn_type = workgen_arr[hrd_fastrand(&tg_seed) % 100];
+        //txn_type = sb_txn_type_t::balance;
+
+        sb_dprintf("Worker %d Coro %d started TX of type={%s}\n",
+                wrkr_gid, coro_id, sb_tx_type_to_string(txn_type).c_str());
+
 		switch(txn_type) {
 			case sb_txn_type_t::amalgamate:
 				txn_amalgamate(yield, coro_id, tx);

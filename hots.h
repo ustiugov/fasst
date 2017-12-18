@@ -17,11 +17,12 @@ using namespace boost::coroutines;
 
 // Debugging for different subsystems
 #define RPC_DEBUG_ASSERT 0	/* rpc_defs.h */
-#define DS_DEBUG_ASSERT 0	/* ds.h */
-#define TX_DEBUG_ASSERT 0	/* tx_defs.h */
-#define LS_DEBUG_ASSERT 0	/* lockserver.h */
+#define DS_DEBUG_ASSERT  0	/* ds.h */
+#define TX_DEBUG_ASSERT  0	/* tx_defs.h */
+#define LS_DEBUG_ASSERT  0	/* lockserver.h */
 
 #define RPC_DEBUG_PRINTF 0	/* rpc_defs.h */
+#define SB_DEBUG_PRINTF  0	/* apps/smallbank */
 
 #define HOTS_ASSERT_MSG(condition, message) \
 	do { \

@@ -26,11 +26,13 @@ Rpc::Rpc(struct rpc_args args) : info(args)
 		shm_key);	/* dgram buf shm key */
 
 	/* Save lkey to avoid indexing into dgram_buf_mr repeatedly */
-	lkey = cb->dgram_buf_mr->lkey;
+//	lkey = cb->dgram_buf_mr->lkey;
 
 	init_non_zero_members();
 	init_coroutine_metadata();
 
+init_send_wrs();
+return;
 	/* Initialize RECV freelist and constant fields of wr's */
 	init_recv_wrs();
 	init_send_wrs();

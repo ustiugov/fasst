@@ -21,7 +21,7 @@ int Rpc::send_reqs(int coro_id)
 
 	/* Bookkeeping */
 	int wr_i = 0;
-	struct ibv_send_wr *bad_wr;
+//	struct ibv_send_wr *bad_wr;
 
 	for(int msg_i = 0; msg_i < num_uniq_mn; msg_i++) {
 		rpc_cmsg_t *cmsg = &req_batch->cmsg_arr[msg_i];
@@ -69,9 +69,9 @@ int Rpc::send_reqs(int coro_id)
 			rpc_dassert(wr_i > 0 && wr_i <= RPC_MAX_POSTLIST); /* Need > 0 */
 			send_wr[wr_i - 1].next = NULL;	/* Breaker of chains */
 
-			int ret = ibv_post_send(cb->dgram_qp[active_qp],
-				&send_wr[0], &bad_wr);
-			rpc_dassert_msg(ret == 0, "Rpc: ibv_post_send error\n");
+//			int ret = ibv_post_send(cb->dgram_qp[active_qp],
+//				&send_wr[0], &bad_wr);
+//			rpc_dassert_msg(ret == 0, "Rpc: ibv_post_send error\n");
 			rpc_stat_inc(stat_resp_post_send_calls, 1);
 
 			/* Reset */
@@ -234,7 +234,7 @@ coro_id_t* Rpc::poll_comps()
 	
 	/* Poll for completions */
 	long long poll_recv_cq_start = rpc_get_cycles();
-	int cq_comps = ibv_poll_cq(cb->dgram_recv_cq[0], HRD_RQ_DEPTH, wc);
+	int cq_comps = 4; //ibv_poll_cq(cb->dgram_recv_cq[0], HRD_RQ_DEPTH, wc);
 	tot_cycles_poll_recv_cq += rpc_get_cycles() - poll_recv_cq_start;
 
 	if(cq_comps == 0) {
@@ -246,7 +246,7 @@ coro_id_t* Rpc::poll_comps()
 	}
 
 	/* Reset the response batch if there are completions */
-	int cur_comp_coro = RPC_MASTER_CORO_ID;	/* For completed coroutines */
+//	int cur_comp_coro = RPC_MASTER_CORO_ID;	/* For completed coroutines */
 	resp_batch.clear();
 
 #if RPC_ENABLE_MICA_PREFETCH == 1
@@ -263,11 +263,12 @@ coro_id_t* Rpc::poll_comps()
 	}
 #endif
 
+#if 0
 	for(int comp_i = 0; comp_i < cq_comps; comp_i++) {
 		/* Unmarshal the completion's immediate */
 		union rpc_imm wc_imm;
 		wc_imm.int_rep = wc[comp_i].imm_data;
-		check_imm(wc_imm);;
+//		check_imm(wc_imm);;
 
 		uint32_t _is_req = wc_imm.is_req;
 		uint32_t _num_reqs = wc_imm.num_reqs;	/* or number of resps */
@@ -297,10 +298,12 @@ coro_id_t* Rpc::poll_comps()
 			rpc_req_batch_t *req_batch = &req_batch_arr[_coro_id];
 			req_batch->num_reqs_done += _num_reqs;
 
-			if(req_batch->num_reqs_done == req_batch->num_reqs) {
+//			if(req_batch->num_reqs_done == req_batch->num_reqs) {
+			if(1) {
 				/* Record completed coroutine */
-				rpc_dprintf("Rpc: Worker %d received all responses "
-					"for coroutine %d\n", info.wrkr_gid, _coro_id);
+				rpc_dprintf("Rpc: Worker %d received all(%d) responses "
+					"for coroutine %d\n", info.wrkr_gid, req_batch->num_reqs,
+                    _coro_id);
 
 				next_coro[cur_comp_coro] = _coro_id;
 				cur_comp_coro = _coro_id;
@@ -459,6 +462,8 @@ coro_id_t* Rpc::poll_comps()
 		_c = next_coro[_c];
 	}
 #endif
+
+#endif //0
 
 	return next_coro;
 }

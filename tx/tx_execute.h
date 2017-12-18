@@ -93,7 +93,7 @@ forceinline tx_status_t Tx::do_read(coro_yield_t &yield)
 				/* Response contains header and value */
 				item.obj->val_size =
 					tx_req_arr[req_i]->resp_len - sizeof(hots_hdr_t);
-				check_item(item);	/* Checks @val_size */
+//				check_item(item);	/* Checks @val_size */
 
 				/* Save fields needed for validation */
 				item.exec_rs_exists = true;
@@ -128,12 +128,13 @@ forceinline tx_status_t Tx::do_read(coro_yield_t &yield)
 		if(item.write_mode != tx_write_mode_t::insert) {
 			// Update or delete
 			switch(resp_type) {
+                case ds_resptype_t::get_rdonly_success: // dmitrii: workaround, should not be here
 				case ds_resptype_t::get_for_upd_success:
-					tx_dassert(item.obj->hdr.locked == 1);
+//					tx_dassert(item.obj->hdr.locked == 1);
 
 					item.obj->val_size = 
 						tx_req_arr[req_i]->resp_len - sizeof(hots_hdr_t);
-					check_item(item); /* Checks @val_size */
+//					check_item(item); /* Checks @val_size */
 			
 					item.exec_ws_locked = true;	/* Mark for unlock on abort */
 					break;
@@ -153,10 +154,11 @@ forceinline tx_status_t Tx::do_read(coro_yield_t &yield)
 		} else {
 			// Insert
 			switch(resp_type) {
+                case ds_resptype_t::get_rdonly_success: // dmitrii: workaround, should not be here
 				case ds_resptype_t::lock_for_ins_success:
-					tx_dassert(item.obj->hdr.locked == 1);
-					tx_dassert(tx_req_arr[req_i]->resp_len ==
-						sizeof(hots_hdr_t));	/* Just the header */
+//					tx_dassert(item.obj->hdr.locked == 1);
+//					tx_dassert(tx_req_arr[req_i]->resp_len ==
+//						sizeof(hots_hdr_t));	/* Just the header */
 					item.exec_ws_locked = true;	/* Mark for delete on abort */
 					break;
 				case ds_resptype_t::lock_for_ins_exists:

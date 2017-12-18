@@ -3,15 +3,15 @@
   },
 
   "hots": {
-	"num_coro": 20,
+	"num_coro": 32,
 	"base_port_index": 0,
 	"num_ports": 2,
 	"num_qps": 1,
 	"postlist": 16,
 	"numa_node": 0,
-	"num_machines": 6,
-	"workers_per_machine": 14,
-	"num_backups": 2,
+	"num_machines": 2,
+	"workers_per_machine": 12,
+	"num_backups": 0,
 	"use_lock_server": false
   }
 }

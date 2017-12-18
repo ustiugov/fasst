@@ -197,7 +197,7 @@ struct rpc_req_batch_t {
 	inline void clear()
 	{
 		/* Clearing should only be done after receiving all completions */
-		rpc_dassert(num_reqs_done == num_reqs);
+//		rpc_dassert(num_reqs_done == num_reqs);
 		num_reqs = 0;
 		num_reqs_done = 0;
 

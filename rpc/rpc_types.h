@@ -57,6 +57,10 @@ static std::string rpc_type_to_string(int rpc_type)
 			return std::string("RPC_MICA_REQ-backup-1");
 		case RPC_MICA_REQ + 2:
 			return std::string("RPC_MICA_REQ-backup-2");
+		case RPC_SAVING_REQ:
+			return std::string("RPC_SAVING_REQ");
+		case RPC_CHECKING_REQ:
+			return std::string("RPC_CHECKING_REQ");
 		default:
 			return std::string("Invalid or unhandled");
 	};

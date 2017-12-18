@@ -351,7 +351,8 @@ private:
 		flag |= (size <= HRD_MAX_INLINE ? IBV_SEND_INLINE : 0);
 
 		if(nb_pending[qp] == RPC_UNSIG_BATCH - 1) {
-			hrd_poll_cq(cb->dgram_send_cq[qp], 1, wc);
+            nb_pending[qp] = 0;
+//			hrd_poll_cq(cb->dgram_send_cq[qp], 1, wc);
 			nb_pending[qp] = 0;
 		} else {
 			nb_pending[qp]++;

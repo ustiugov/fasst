@@ -70,6 +70,7 @@ struct hrd_ctrl_blk* hrd_ctrl_blk_init(int local_hid, int port_index,
 	cb->dgram_buf_size = dgram_buf_size;
 	cb->dgram_buf_shm_key = dgram_buf_shm_key;
 
+#if 0
 	/* Get the device to use. This fills in cb->device_id and cb->dev_port_id */
 	struct ibv_device *ib_dev = hrd_resolve_port_index(cb, port_index);
 	CPE(!ib_dev, "HRD: IB device not found", 0);
@@ -83,6 +84,7 @@ struct hrd_ctrl_blk* hrd_ctrl_blk_init(int local_hid, int port_index,
 
 	int ib_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | 
 		IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_ATOMIC;
+#endif
 
 	/*
 	 * Create datagram QPs and transition them RTS.
@@ -99,7 +101,7 @@ struct hrd_ctrl_blk* hrd_ctrl_blk_init(int local_hid, int port_index,
 		assert(cb->dgram_qp != NULL && cb->dgram_send_cq != NULL &&
 			cb->dgram_recv_cq != NULL);
 		
-		hrd_create_dgram_qps(cb);
+//		hrd_create_dgram_qps(cb);
 
 		if(prealloc_dgram_buf == NULL) {
 			/* Create and register dgram_buf - always make it multiple of 2 MB */
@@ -123,14 +125,14 @@ struct hrd_ctrl_blk* hrd_ctrl_blk_init(int local_hid, int port_index,
 			assert(cb->dgram_buf != NULL);
 			memset((char *) cb->dgram_buf, 0, reg_size);
 		
-			cb->dgram_buf_mr = ibv_reg_mr(cb->pd,
-				(char *) cb->dgram_buf, reg_size, ib_flags);
-			assert(cb->dgram_buf_mr != NULL);
+//			cb->dgram_buf_mr = ibv_reg_mr(cb->pd,
+//				(char *) cb->dgram_buf, reg_size, ib_flags);
+//			assert(cb->dgram_buf_mr != NULL);
 		} else {
 			cb->dgram_buf = (volatile uint8_t *) prealloc_dgram_buf;
-			cb->dgram_buf_mr = ibv_reg_mr(cb->pd,
-				(char *) cb->dgram_buf, cb->dgram_buf_size, ib_flags);
-			assert(cb->dgram_buf_mr != NULL);
+//			cb->dgram_buf_mr = ibv_reg_mr(cb->pd,
+//				(char *) cb->dgram_buf, cb->dgram_buf_size, ib_flags);
+//			assert(cb->dgram_buf_mr != NULL);
 		}
 	}
 
@@ -169,14 +171,14 @@ struct hrd_ctrl_blk* hrd_ctrl_blk_init(int local_hid, int port_index,
 				assert(cb->conn_buf != NULL);
 			}
 			memset((char *) cb->conn_buf, 0, reg_size);
-			cb->conn_buf_mr = ibv_reg_mr(cb->pd,
-				(char *) cb->conn_buf, reg_size, ib_flags);
-			assert(cb->conn_buf_mr != NULL);
+//			cb->conn_buf_mr = ibv_reg_mr(cb->pd,
+//				(char *) cb->conn_buf, reg_size, ib_flags);
+//			assert(cb->conn_buf_mr != NULL);
 		} else {
 			cb->conn_buf = (volatile uint8_t *) prealloc_conn_buf;
-			cb->conn_buf_mr = ibv_reg_mr(cb->pd,
-				(char *) cb->conn_buf, cb->conn_buf_size, ib_flags);
-			assert(cb->conn_buf_mr != NULL);
+//			cb->conn_buf_mr = ibv_reg_mr(cb->pd,
+//				(char *) cb->conn_buf, cb->conn_buf_size, ib_flags);
+//			assert(cb->conn_buf_mr != NULL);
 		}
 	}
 
